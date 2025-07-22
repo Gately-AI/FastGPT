@@ -35,7 +35,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<any>) {
   await checkTeamAIPoints(teamId);
 
   const { tokens, vectors } = await getVectorsByText({
-    input: query,
+    input: [query],
     model: getEmbeddingModel(model),
     type
   });

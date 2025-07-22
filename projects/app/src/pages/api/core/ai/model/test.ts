@@ -102,7 +102,7 @@ const testEmbeddingModel = async (
   headers: Record<string, string>
 ) => {
   return getVectorsByText({
-    input: 'Hi',
+    input: ['Hi'],
     model,
     headers
   });

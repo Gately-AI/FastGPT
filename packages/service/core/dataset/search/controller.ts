@@ -447,7 +447,7 @@ export async function searchDatasetData(
   }) => {
     const { vectors, tokens } = await getVectorsByText({
       model: getEmbeddingModel(model),
-      input: query,
+      input: [query],
       type: 'query'
     });
 
@@ -885,6 +885,7 @@ export const defaultSearchDatasetData = async ({
   const { concatQueries, extensionQueries, rewriteQuery, aiExtensionResult } =
     await datasetSearchQueryExtension({
       query,
+      embeddingModel: props.model,
       extensionModel,
       extensionBg: datasetSearchExtensionBg,
       histories
@@ -898,9 +899,10 @@ export const defaultSearchDatasetData = async ({
 
   return {
     ...result,
+    embeddingTokens: result.embeddingTokens + (aiExtensionResult?.embeddingTokens || 0),
     queryExtensionResult: aiExtensionResult
       ? {
-          model: aiExtensionResult.model,
+          model: aiExtensionResult.llmModel,
           inputTokens: aiExtensionResult.inputTokens,
           outputTokens: aiExtensionResult.outputTokens,
           query: extensionQueries.join('\n')

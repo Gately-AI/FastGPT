@@ -67,7 +67,7 @@ export const insertDatasetDataVector = async ({
   return retryFn(async () => {
     const { vectors, tokens } = await getVectorsByText({
       model,
-      input: query,
+      input: [query],
       type: 'db'
     });
     const { insertId } = await Vector.insert({

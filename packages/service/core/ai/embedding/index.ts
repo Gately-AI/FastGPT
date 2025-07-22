@@ -6,14 +6,14 @@ import { addLog } from '../../../common/system/log';
 
 type GetVectorProps = {
   model: EmbeddingModelItemType;
-  input: string;
+  input: string[];
   type?: `${EmbeddingTypeEnm}`;
   headers?: Record<string, string>;
 };
 
 // text to vector
 export async function getVectorsByText({ model, input, type, headers }: GetVectorProps) {
-  if (!input) {
+  if (!input || input.length === 0) {
     return Promise.reject({
       code: 500,
       message: 'input is empty'
@@ -31,7 +31,7 @@ export async function getVectorsByText({ model, input, type, headers }: GetVecto
           ...(type === EmbeddingTypeEnm.db && model.dbConfig),
           ...(type === EmbeddingTypeEnm.query && model.queryConfig),
           model: model.model,
-          input: [input]
+          input
         },
         model.requestUrl
           ? {
@@ -55,7 +55,12 @@ export async function getVectorsByText({ model, input, type, headers }: GetVecto
         }
 
         const [tokens, vectors] = await Promise.all([
-          countPromptTokens(input),
+          (async () => {
+            if (res.usage) return res.usage.total_tokens;
+
+            const tokens = await Promise.all(input.map((item) => countPromptTokens(item)));
+            return tokens.reduce((sum, item) => sum + item, 0);
+          })(),
           Promise.all(
             res.data
               .map((item) => unityDimensional(item.embedding))

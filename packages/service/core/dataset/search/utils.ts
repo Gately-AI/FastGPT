@@ -6,11 +6,13 @@ import { chatValue2RuntimePrompt } from '@fastgpt/global/core/chat/adapt';
 
 export const datasetSearchQueryExtension = async ({
   query,
+  embeddingModel,
   extensionModel,
   extensionBg = '',
   histories = []
 }: {
   query: string;
+  embeddingModel: string;
   extensionModel?: LLMModelItemType;
   extensionBg?: string;
   histories?: ChatItemType[];
@@ -67,7 +69,8 @@ Human: ${query}
       chatBg: extensionBg,
       query,
       histories,
-      model: extensionModel.model
+      llmModel: extensionModel.model,
+      embeddingModel
     });
     if (result.extensionQueries?.length === 0) return;
     return result;
